@@ -89,3 +89,13 @@ package      : n/a
 Full machine-readable results: [`AUDIT.md`](AUDIT.md) · regenerate with `python -m compliance-atlas --help` + `pytest -q`.
 
 <div align="right"><a href="#top">↑ back to top</a></div>
+
+<!-- cognis:domains:start -->
+## Domains
+
+**Primary domain:** Government & Compliance  ·  **JTF MERIDIAN division:** IRONCLAD · ANVIL
+
+**Topics:** `cognis` `compliance` `govtech` `grc` `privacy`
+
+Part of the **Cognis Neural Suite** — 300+ source-available tools organized across 12 domains under the JTF MERIDIAN command structure. See the [suite on GitHub](https://github.com/cognis-digital) and [jtf-meridian](https://github.com/cognis-digital/jtf-meridian) for how the pieces fit together.
+<!-- cognis:domains:end -->
