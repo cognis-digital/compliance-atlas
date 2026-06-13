@@ -2,11 +2,32 @@
 
 > Part of the **[Cognis Neural Suite](https://github.com/cognis-digital)** · COCL v1.0 · domain: `compliance`
 
+## What is this?
+
+Compliance Atlas is a plain-English reference guide covering the major security and privacy rules that businesses must follow — things like GDPR, HIPAA, PCI DSS, and NIST frameworks. Instead of digging through hundreds of pages of official standards, you get each framework summarized to what actually matters, plus side-by-side comparison tables that show where the rules overlap so your team can do the work once and satisfy multiple requirements at the same time. It is aimed at security teams, compliance officers, and developers who need to quickly understand what a framework demands and how it relates to the others they are already working with.
+
+---
+
 A research-grade, **condensed** reference for the security & privacy frameworks teams actually get
 asked about — each summarized to its essentials, with **crosswalks** showing how they overlap so you
 implement once and satisfy many. Built from primary sources (linked in `SOURCES.md`).
 
 > Not legal advice. Frameworks change — verify against the authoritative source before relying on this.
+
+## Getting started
+
+```sh
+# Clone the repository
+git clone https://github.com/cognis-digital/compliance-atlas.git
+cd compliance-atlas
+```
+
+Browse the framework summaries in `frameworks/`, the overlap tables in `crosswalks/`, and the master
+cross-framework matrix in `crosswalks/master-matrix.md`. No dependencies required — all content is
+plain Markdown that opens in any text editor, browser, or documentation renderer.
+
+For webhook/SIEM integration, see `integrations/webhook.py` (stdlib-only, no install needed).
+For deployment options (Docker, Kubernetes, Terraform), see `docs/DEPLOY.md`.
 
 ## Frameworks covered
 
@@ -44,12 +65,10 @@ flowchart LR
   R --> S[Cognis Neural Suite]
 ```
 
-**Explore the suite →** [🗂️ all tools](https://github.com/cognis-digital/cognis-neural-suite) · [⭐ awesome-cognis](https://github.com/cognis-digital/awesome-cognis) · [🔗 cognis-sources](https://github.com/cognis-digital/cognis-sources)
+**Explore the suite →** [all tools](https://github.com/cognis-digital/cognis-neural-suite) · [awesome-cognis](https://github.com/cognis-digital/awesome-cognis) · [cognis-sources](https://github.com/cognis-digital/cognis-sources)
 
 <a name="verification"></a>
 ## Verification
-
-
 
 Every push is verified end-to-end. Latest audit (2026-06-13):
 
@@ -70,4 +89,3 @@ package      : n/a
 Full machine-readable results: [`AUDIT.md`](AUDIT.md) · regenerate with `python -m compliance-atlas --help` + `pytest -q`.
 
 <div align="right"><a href="#top">↑ back to top</a></div>
-
