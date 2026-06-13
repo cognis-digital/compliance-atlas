@@ -8,6 +8,31 @@ implement once and satisfy many. Built from primary sources (linked in `SOURCES.
 
 > Not legal advice. Frameworks change — verify against the authoritative source before relying on this.
 
+## Usage — step by step
+
+1. Get the atlas — clone it, or install via the suite installer:
+   ```bash
+   git clone https://github.com/cognis-digital/compliance-atlas.git && cd compliance-atlas
+   ./install.sh          # or: ./scripts/setup-linux.sh
+   ```
+2. Read a framework summary and its crosswalks (plain Markdown, no build step):
+   ```bash
+   less frameworks/soc2.md
+   less crosswalks/soc2-iso27001.md
+   ```
+3. Implement once, satisfy many — start from the master matrix to find overlapping controls:
+   ```bash
+   less crosswalks/master-matrix.md
+   ```
+4. Expose the atlas to agents over the JSON/MCP integration (see `integrations/`):
+   ```bash
+   python integrations/webhook.py
+   ```
+5. In CI, treat the atlas as a versioned reference and lint it against `SOURCES.md`:
+   ```bash
+   ./scripts/lint.sh
+   ```
+
 ## Frameworks covered
 
 | File | Framework | TL;DR |
