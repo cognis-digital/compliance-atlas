@@ -24,6 +24,8 @@ implement once and satisfy many. Built from primary sources (linked in `SOURCES.
    ```bash
    less crosswalks/master-matrix.md
    ```
+   …or run it: describe your control posture in a small JSON file and cross-walk
+   it against every framework at once with the **`atlas`** assessor (below).
 4. Expose the atlas to agents over the JSON/MCP integration (see `integrations/`):
    ```bash
    python integrations/webhook.py
@@ -57,6 +59,80 @@ implement once and satisfy many. Built from primary sources (linked in `SOURCES.
 - `crosswalks/master-matrix.md` — one table, all frameworks by theme.
 
 See `SOURCES.md` for primary references.
+
+## `atlas` — run the crosswalks as a gap report
+
+The master matrix isn't just a table to read — `atlas.py` turns it into an
+actionable, CI-gateable gap report. You describe your control posture per theme
+in a small JSON file; `atlas` cross-walks it against the six frameworks
+(SOC 2 · ISO 27001 · NIST CSF 2.0 · 800-53 r5 · 800-171 · PCI DSS 4.0) and tells
+you, **per framework**, which control groups are covered, partial, or missing —
+so you "implement once, satisfy many". Pure standard library, no dependencies.
+
+> Every framework reference it prints is transcribed verbatim from
+> `crosswalks/master-matrix.md`. It's a planning aid, not an audit, and not legal advice.
+
+```bash
+# assess a posture against one framework
+python -m atlas assess demos/01-saas-soc2/posture.json --framework soc2
+
+# all six frameworks at once (implement-once-satisfy-many view)
+python -m atlas assess demos/08-msp-multiframework/posture.json
+
+# machine-readable exports: json · csv · markdown · sarif
+python -m atlas assess demos/08-msp-multiframework/posture.json --format sarif > atlas.sarif
+
+# CI gate: non-zero exit if any theme is partial/missing
+python -m atlas assess posture.json --fail-on-gap
+
+# explore the inputs
+python -m atlas matrix        # the embedded theme matrix
+python -m atlas frameworks    # known framework keys
+```
+
+A posture file (omitted themes are assessed as `missing` — silence is a gap):
+
+```json
+{
+  "org": "Acme, Inc.",
+  "scope": ["soc2"],
+  "controls": {
+    "Access control": "implemented",
+    "Crypto / data protection": "partial",
+    "Logging & monitoring": "missing"
+  }
+}
+```
+
+Status values: `implemented` | `partial` | `missing` | `n/a`.
+
+### Export formats
+
+| `--format` | Use it for |
+|---|---|
+| `table` (default) | a quick human read in the terminal |
+| `json` | feeding a GRC pipeline / opening tickets per finding |
+| `csv` | an evidence-binder snapshot / spreadsheet |
+| `markdown` | pasting into a readiness deck or PR |
+| **`sarif`** | uploading gaps to a **code-scanning / SARIF 2.1.0** dashboard |
+
+## Worked demos — real situations, run them as-is
+
+`demos/<NN-name>/` each pair a realistic `posture.json` with a `SCENARIO.md`
+(where the data came from, what to expect, the exact command, how to act):
+
+| Demo | Situation |
+|---|---|
+| `01-saas-soc2` | Series-B SaaS heading into its first SOC 2 Type II |
+| `02-fintech-pci` | Payment facilitator on the road to PCI DSS 4.0 |
+| `03-defense-cmmc-800171` | DIB subcontractor scoping CMMC L2 / NIST 800-171 (CUI) |
+| `04-health-startup` | Digital-health startup mapping SOC 2 **and** NIST CSF together |
+| `05-eu-ai-vendor` | High-risk AI provider hardening its ISO 27001 ISMS |
+| `06-greenfield-baseline` | Pre-seed: assess-by-default when you have nothing yet |
+| `07-iso-certification-prep` | Clean run — `--fail-on-gap` as an ISO stage-2 CI gate |
+| `08-msp-multiframework` | MSP shared baseline reported across all six frameworks at once |
+
+Tests live in `tests/` (`python -m pytest -q`).
 
 ## How it fits
 

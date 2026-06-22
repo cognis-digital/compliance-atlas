@@ -1,0 +1,13 @@
+{
+  "org": "Northwind SaaS, Inc.",
+  "scope": ["soc2"],
+  "controls": {
+    "Access control": "implemented",
+    "Crypto / data protection": "implemented",
+    "Logging & monitoring": "partial",
+    "Incident response": "partial",
+    "Change management": "implemented",
+    "Risk management": "missing",
+    "Vendor / supply chain": "missing"
+  }
+}

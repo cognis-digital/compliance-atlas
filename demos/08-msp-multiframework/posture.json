@@ -1,0 +1,13 @@
+{
+  "org": "Cascade Managed Services (MSP, shared baseline)",
+  "scope": ["soc2", "iso27001", "nist-csf", "800-53", "800-171", "pci-dss"],
+  "controls": {
+    "Access control": "implemented",
+    "Crypto / data protection": "implemented",
+    "Logging & monitoring": "implemented",
+    "Incident response": "partial",
+    "Change management": "implemented",
+    "Risk management": "partial",
+    "Vendor / supply chain": "missing"
+  }
+}

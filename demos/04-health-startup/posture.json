@@ -1,0 +1,13 @@
+{
+  "org": "Lumen Health (digital therapeutics)",
+  "scope": ["soc2", "nist-csf"],
+  "controls": {
+    "Access control": "implemented",
+    "Crypto / data protection": "implemented",
+    "Logging & monitoring": "partial",
+    "Incident response": "missing",
+    "Change management": "partial",
+    "Risk management": "partial",
+    "Vendor / supply chain": "implemented"
+  }
+}

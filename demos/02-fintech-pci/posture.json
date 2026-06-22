@@ -1,0 +1,13 @@
+{
+  "org": "Halcyon Pay (payment facilitator)",
+  "scope": ["pci-dss"],
+  "controls": {
+    "Access control": "implemented",
+    "Crypto / data protection": "partial",
+    "Logging & monitoring": "implemented",
+    "Incident response": "implemented",
+    "Change management": "partial",
+    "Risk management": "implemented",
+    "Vendor / supply chain": "partial"
+  }
+}

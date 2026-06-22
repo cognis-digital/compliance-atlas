@@ -1,0 +1,13 @@
+{
+  "org": "Veridian AI (high-risk AI provider)",
+  "scope": ["iso27001", "eu-ai-act-adjacent"],
+  "controls": {
+    "Access control": "implemented",
+    "Crypto / data protection": "implemented",
+    "Logging & monitoring": "implemented",
+    "Incident response": "implemented",
+    "Change management": "implemented",
+    "Risk management": "partial",
+    "Vendor / supply chain": "partial"
+  }
+}

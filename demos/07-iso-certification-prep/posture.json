@@ -1,0 +1,13 @@
+{
+  "org": "Meridian Logistics (ISO 27001 stage-2)",
+  "scope": ["iso27001"],
+  "controls": {
+    "Access control": "implemented",
+    "Crypto / data protection": "implemented",
+    "Logging & monitoring": "implemented",
+    "Incident response": "implemented",
+    "Change management": "implemented",
+    "Risk management": "implemented",
+    "Vendor / supply chain": "implemented"
+  }
+}

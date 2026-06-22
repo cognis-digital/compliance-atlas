@@ -1,0 +1,13 @@
+{
+  "org": "Ironwood Aerospace (DIB subcontractor)",
+  "scope": ["800-171", "cmmc-l2"],
+  "controls": {
+    "Access control": "partial",
+    "Crypto / data protection": "missing",
+    "Logging & monitoring": "missing",
+    "Incident response": "partial",
+    "Change management": "partial",
+    "Risk management": "partial",
+    "Vendor / supply chain": "missing"
+  }
+}
