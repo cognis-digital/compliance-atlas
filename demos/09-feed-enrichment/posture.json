@@ -1,0 +1,13 @@
+{
+  "org": "Edge Site Alpha (air-gapped enclave)",
+  "scope": ["800-53", "rmf-moderate"],
+  "controls": {
+    "Access control": "implemented",
+    "Crypto / data protection": "partial",
+    "Logging & monitoring": "missing",
+    "Incident response": "partial",
+    "Change management": "implemented",
+    "Risk management": "partial",
+    "Vendor / supply chain": "missing"
+  }
+}

@@ -1,0 +1,172 @@
+{
+ "catalog": {
+  "uuid": "ea7c7688-79c5-463b-a91b-0650f2d98623",
+  "metadata": {
+   "title": "Electronic (OSCAL) Version of NIST SP 800-53 Rev 5.2.0 Controls and SP 800-53A Rev 5.2.0 Assessment Procedures",
+   "version": "5.2.0"
+  },
+  "groups": [
+   {
+    "id": "ac",
+    "title": "Access Control",
+    "class": "family",
+    "controls": [
+     {
+      "id": "ac-1",
+      "title": "Policy and Procedures"
+     },
+     {
+      "id": "ac-2",
+      "title": "Account Management"
+     },
+     {
+      "id": "ac-3",
+      "title": "Access Enforcement"
+     },
+     {
+      "id": "ac-4",
+      "title": "Information Flow Enforcement"
+     }
+    ]
+   },
+   {
+    "id": "au",
+    "title": "Audit and Accountability",
+    "class": "family",
+    "controls": [
+     {
+      "id": "au-1",
+      "title": "Policy and Procedures"
+     },
+     {
+      "id": "au-2",
+      "title": "Event Logging"
+     },
+     {
+      "id": "au-3",
+      "title": "Content of Audit Records"
+     },
+     {
+      "id": "au-4",
+      "title": "Audit Log Storage Capacity"
+     }
+    ]
+   },
+   {
+    "id": "cm",
+    "title": "Configuration Management",
+    "class": "family",
+    "controls": [
+     {
+      "id": "cm-1",
+      "title": "Policy and Procedures"
+     },
+     {
+      "id": "cm-2",
+      "title": "Baseline Configuration"
+     },
+     {
+      "id": "cm-3",
+      "title": "Configuration Change Control"
+     },
+     {
+      "id": "cm-4",
+      "title": "Impact Analyses"
+     }
+    ]
+   },
+   {
+    "id": "ir",
+    "title": "Incident Response",
+    "class": "family",
+    "controls": [
+     {
+      "id": "ir-1",
+      "title": "Policy and Procedures"
+     },
+     {
+      "id": "ir-2",
+      "title": "Incident Response Training"
+     },
+     {
+      "id": "ir-3",
+      "title": "Incident Response Testing"
+     },
+     {
+      "id": "ir-4",
+      "title": "Incident Handling"
+     }
+    ]
+   },
+   {
+    "id": "ra",
+    "title": "Risk Assessment",
+    "class": "family",
+    "controls": [
+     {
+      "id": "ra-1",
+      "title": "Policy and Procedures"
+     },
+     {
+      "id": "ra-2",
+      "title": "Security Categorization"
+     },
+     {
+      "id": "ra-3",
+      "title": "Risk Assessment"
+     },
+     {
+      "id": "ra-4",
+      "title": "Risk Assessment Update"
+     }
+    ]
+   },
+   {
+    "id": "sc",
+    "title": "System and Communications Protection",
+    "class": "family",
+    "controls": [
+     {
+      "id": "sc-1",
+      "title": "Policy and Procedures"
+     },
+     {
+      "id": "sc-2",
+      "title": "Separation of System and User Functionality"
+     },
+     {
+      "id": "sc-3",
+      "title": "Security Function Isolation"
+     },
+     {
+      "id": "sc-4",
+      "title": "Information in Shared System Resources"
+     }
+    ]
+   },
+   {
+    "id": "sr",
+    "title": "Supply Chain Risk Management",
+    "class": "family",
+    "controls": [
+     {
+      "id": "sr-1",
+      "title": "Policy and Procedures"
+     },
+     {
+      "id": "sr-2",
+      "title": "Supply Chain Risk Management Plan"
+     },
+     {
+      "id": "sr-3",
+      "title": "Supply Chain Controls and Processes"
+     },
+     {
+      "id": "sr-4",
+      "title": "Provenance"
+     }
+    ]
+   }
+  ]
+ }
+}

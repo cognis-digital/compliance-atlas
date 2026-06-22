@@ -1,0 +1,278 @@
+{
+ "metadata": {
+  "mapping_framework": "nist_800_53",
+  "attack_version": "16.1"
+ },
+ "mapping_objects": [
+  {
+   "capability_id": "CM-03",
+   "capability_group": "CM",
+   "capability_description": "Configuration Change Control",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1666",
+   "attack_object_name": "Modify Cloud Resource Hierarchy",
+   "status": "complete"
+  },
+  {
+   "capability_id": "AC-02",
+   "capability_group": "AC",
+   "capability_description": "Account Management",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1556.009",
+   "attack_object_name": "Conditional Access Policies",
+   "status": "complete"
+  },
+  {
+   "capability_id": "SC-05",
+   "capability_group": "SC",
+   "capability_description": "Denial-of-service Protection",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1496.003",
+   "attack_object_name": "SMS Pumping",
+   "status": "complete"
+  },
+  {
+   "capability_id": "AC-06",
+   "capability_group": "AC",
+   "capability_description": "Least Privilege",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1110",
+   "attack_object_name": "Brute Force",
+   "status": "complete"
+  },
+  {
+   "capability_id": "AC-02",
+   "capability_group": "AC",
+   "capability_description": "Account Management",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1613",
+   "attack_object_name": "Container and Resource Discovery",
+   "status": "complete"
+  },
+  {
+   "capability_id": "AC-02",
+   "capability_group": "AC",
+   "capability_description": "Account Management",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1619",
+   "attack_object_name": "Cloud Storage Object Discovery",
+   "status": "complete"
+  },
+  {
+   "capability_id": "AC-04",
+   "capability_group": "AC",
+   "capability_description": "Information Flow Enforcement",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1001",
+   "attack_object_name": "Data Obfuscation",
+   "status": "complete"
+  },
+  {
+   "capability_id": "AC-02",
+   "capability_group": "AC",
+   "capability_description": "Account Management",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1070.009",
+   "attack_object_name": "Clear Persistence",
+   "status": "complete"
+  },
+  {
+   "capability_id": "CM-06",
+   "capability_group": "CM",
+   "capability_description": "Configuration Settings",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1001",
+   "attack_object_name": "Data Obfuscation",
+   "status": "complete"
+  },
+  {
+   "capability_id": "CM-06",
+   "capability_group": "CM",
+   "capability_description": "Configuration Settings",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1001.001",
+   "attack_object_name": "Junk Data",
+   "status": "complete"
+  },
+  {
+   "capability_id": "CM-06",
+   "capability_group": "CM",
+   "capability_description": "Configuration Settings",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1001.003",
+   "attack_object_name": "Protocol or Service Impersonation",
+   "status": "complete"
+  },
+  {
+   "capability_id": "CM-06",
+   "capability_group": "CM",
+   "capability_description": "Configuration Settings",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1003",
+   "attack_object_name": "OS Credential Dumping",
+   "status": "complete"
+  },
+  {
+   "capability_id": "CM-06",
+   "capability_group": "CM",
+   "capability_description": "Configuration Settings",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1003.001",
+   "attack_object_name": "LSASS Memory",
+   "status": "complete"
+  },
+  {
+   "capability_id": "SC-07",
+   "capability_group": "SC",
+   "capability_description": "Boundary Protection",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1001",
+   "attack_object_name": "Data Obfuscation",
+   "status": "complete"
+  },
+  {
+   "capability_id": "SC-28",
+   "capability_group": "SC",
+   "capability_description": "Protection of Information at Rest",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1003",
+   "attack_object_name": "OS Credential Dumping",
+   "status": "complete"
+  },
+  {
+   "capability_id": "SC-39",
+   "capability_group": "SC",
+   "capability_description": "Process Isolation",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1003",
+   "attack_object_name": "OS Credential Dumping",
+   "status": "complete"
+  },
+  {
+   "capability_id": "SC-03",
+   "capability_group": "SC",
+   "capability_description": "Security Function Isolation",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1003.001",
+   "attack_object_name": "LSASS Memory",
+   "status": "complete"
+  },
+  {
+   "capability_id": "SC-04",
+   "capability_group": "SC",
+   "capability_description": "Information in Shared System Resources",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1020.001",
+   "attack_object_name": "Traffic Duplication",
+   "status": "complete"
+  },
+  {
+   "capability_id": "RA-10",
+   "capability_group": "RA",
+   "capability_description": "Threat Hunting",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1190",
+   "attack_object_name": "Exploit Public-Facing Application",
+   "status": "complete"
+  },
+  {
+   "capability_id": "RA-10",
+   "capability_group": "RA",
+   "capability_description": "Threat Hunting",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1195",
+   "attack_object_name": "Supply Chain Compromise",
+   "status": "complete"
+  },
+  {
+   "capability_id": "RA-10",
+   "capability_group": "RA",
+   "capability_description": "Threat Hunting",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1195.001",
+   "attack_object_name": "Compromise Software Dependencies and Development Tools",
+   "status": "complete"
+  },
+  {
+   "capability_id": "RA-09",
+   "capability_group": "RA",
+   "capability_description": "Criticality Analysis",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1542",
+   "attack_object_name": "Pre-OS Boot",
+   "status": "complete"
+  },
+  {
+   "capability_id": "RA-09",
+   "capability_group": "RA",
+   "capability_description": "Criticality Analysis",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1542.001",
+   "attack_object_name": "System Firmware",
+   "status": "complete"
+  },
+  {
+   "capability_id": "RA-09",
+   "capability_group": "RA",
+   "capability_description": "Criticality Analysis",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1553",
+   "attack_object_name": "Subvert Trust Controls",
+   "status": "complete"
+  },
+  {
+   "capability_id": "SR-11",
+   "capability_group": "SR",
+   "capability_description": "Component Authenticity",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1195",
+   "attack_object_name": "Supply Chain Compromise",
+   "status": "complete"
+  },
+  {
+   "capability_id": "SR-11",
+   "capability_group": "SR",
+   "capability_description": "Component Authenticity",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1195.001",
+   "attack_object_name": "Compromise Software Dependencies and Development Tools",
+   "status": "complete"
+  },
+  {
+   "capability_id": "SR-11",
+   "capability_group": "SR",
+   "capability_description": "Component Authenticity",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1195.002",
+   "attack_object_name": "Compromise Software Supply Chain",
+   "status": "complete"
+  },
+  {
+   "capability_id": "SR-11",
+   "capability_group": "SR",
+   "capability_description": "Component Authenticity",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1195.003",
+   "attack_object_name": "Compromise Hardware Supply Chain",
+   "status": "complete"
+  },
+  {
+   "capability_id": "SR-11",
+   "capability_group": "SR",
+   "capability_description": "Component Authenticity",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1554",
+   "attack_object_name": "Compromise Host Software Binary",
+   "status": "complete"
+  },
+  {
+   "capability_id": "SR-04",
+   "capability_group": "SR",
+   "capability_description": "Provenance",
+   "mapping_type": "mitigates",
+   "attack_object_id": "T1195",
+   "attack_object_name": "Supply Chain Compromise",
+   "status": "complete"
+  }
+ ]
+}

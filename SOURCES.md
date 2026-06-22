@@ -10,6 +10,16 @@
 
 Compiled via web research on 2026-06-08; verify against the live source before relying on it.
 
+## Data-feed ingestion (`atlas feeds`)
+
+Real, keyless public feeds consumed by the edge/air-gap ingestion layer
+(`datafeeds.py` + `data_feeds_2026.json`). See the README "Live data feeds" section.
+
+- **NIST SP 800-53 rev5 catalog (OSCAL)** — `usnistgov/oscal-content` ·
+  https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json
+- **ATT&CK ↔ NIST 800-53 mappings** — Center for Threat-Informed Defense, Mappings Explorer ·
+  https://github.com/center-for-threat-informed-defense/mappings-explorer
+
 <!-- cognis-2026-live-sources -->
 
 ## Live 2026 sources (auto-expanded)

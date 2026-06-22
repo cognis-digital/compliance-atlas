@@ -116,6 +116,71 @@ Status values: `implemented` | `partial` | `missing` | `n/a`.
 | `markdown` | pasting into a readiness deck or PR |
 | **`sarif`** | uploading gaps to a **code-scanning / SARIF 2.1.0** dashboard |
 
+## Live data feeds — real NIST 800-53 + ATT&CK, edge / air-gap deployable
+
+The master matrix only stores a 800-53 **family code** per theme (`AC`, `SC`,
+`AU`, …). `atlas feeds` pulls two **real, authoritative public feeds** to turn
+those codes into something actionable — and it works **fully offline** for
+disconnected / classified / edge deployments.
+
+| Feed id | What it is | Source (keyless HTTPS) |
+|---|---|---|
+| `oscal-800-53-rev5-catalog` | NIST SP 800-53 rev5 control catalog, native **OSCAL** JSON | `raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json` |
+| `attack-nist-mappings` | Center for Threat-Informed Defense **ATT&CK ↔ 800-53** crosswalk | `raw.githubusercontent.com/center-for-threat-informed-defense/mappings-explorer/main/mappings/nist_800_53/attack-16.1/nist_800_53-rev5/enterprise/nist_800_53-rev5_attack-16.1-enterprise.json` |
+
+The ingestion layer (`datafeeds.py` + `data_feeds_2026.json`, bundled) is pure
+standard library: keyless fetch → on-disk cache → offline re-serve → air-gap
+snapshot. `atlas feeds` only ever exposes these two compliance feeds.
+
+```bash
+# list this repo's feeds and their cache freshness
+python -m atlas feeds list
+
+# fetch + cache both feeds (online, one time)
+python -m atlas feeds update
+
+# enrich the matrix: official 800-53 family titles + how many ATT&CK
+# techniques each family is documented to MITIGATE (real threat coverage)
+python -m atlas feeds enrich
+```
+
+```
+THEME                     800-53   FAMILY TITLE                          CTRLS   ATT&CK TECHNIQUES MITIGATED
+Access control            AC       Access Control                           25                          382
+Crypto / data protection  SC       System and Communications Protection     51                          244
+Vendor / supply chain     SR       Supply Chain Risk Management             12                           22
+```
+
+Fold the enrichment into a gap report — every `800-53` finding gains the real
+NIST family title and its ATT&CK technique-coverage count:
+
+```bash
+python -m atlas assess posture.json --framework 800-53 --format json --enrich
+```
+
+### Edge / air-gap (no network)
+
+`--offline` serves from the on-disk cache and **never** touches the network; the
+cache location is `COGNIS_FEEDS_CACHE` (default `~/.cache/cognis-feeds`).
+
+```bash
+# on an air-gapped host pointed at a pre-seeded cache
+COGNIS_FEEDS_CACHE=/srv/feeds python -m atlas feeds enrich --offline
+COGNIS_FEEDS_CACHE=/srv/feeds python -m atlas assess posture.json --enrich --offline
+```
+
+Move the cache across the air gap by **snapshot** (sneakernet):
+
+```bash
+python -m datafeeds snapshot-export feeds.tar.gz          # connected host
+# … carry feeds.tar.gz across the gap …
+COGNIS_FEEDS_CACHE=/srv/feeds python -m datafeeds snapshot-import feeds.tar.gz
+```
+
+Tests run with **zero network**: a trimmed sample of each feed is committed under
+`tests/fixtures/cache/`, and the tests point `COGNIS_FEEDS_CACHE` at it (see
+`demos/09-feed-enrichment/`). Defensive / authorized-use intelligence only.
+
 ## Worked demos — real situations, run them as-is
 
 `demos/<NN-name>/` each pair a realistic `posture.json` with a `SCENARIO.md`
@@ -131,6 +196,7 @@ Status values: `implemented` | `partial` | `missing` | `n/a`.
 | `06-greenfield-baseline` | Pre-seed: assess-by-default when you have nothing yet |
 | `07-iso-certification-prep` | Clean run — `--fail-on-gap` as an ISO stage-2 CI gate |
 | `08-msp-multiframework` | MSP shared baseline reported across all six frameworks at once |
+| `09-feed-enrichment` | Air-gapped enclave: enrich 800-53 themes with real OSCAL titles + ATT&CK coverage, fully offline |
 
 Tests live in `tests/` (`python -m pytest -q`).
 

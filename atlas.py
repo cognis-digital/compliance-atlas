@@ -322,6 +322,18 @@ def _cmd_assess(a: argparse.Namespace) -> int:
     except OSError as e:
         print(f"atlas: cannot read {a.posture}: {e}", file=sys.stderr)
         return 2
+    if getattr(a, "enrich", False):
+        # Augment 800-53 findings with real NIST SP 800-53 rev5 OSCAL family
+        # titles + the count of ATT&CK techniques each family is documented to
+        # mitigate (CTID crosswalk). Surfaces in json/csv/sarif output.
+        import atlas_feeds
+        try:
+            atlas_feeds.enrich_findings(findings, offline=a.offline)
+        except (FileNotFoundError, ConnectionError) as e:
+            print(f"atlas: feed enrichment unavailable ({e}); run "
+                  f"'atlas feeds update' first, or pass --offline with a cache",
+                  file=sys.stderr)
+            return 2
     out = _FORMATTERS[a.format](findings, posture)
     print(out)
     if a.fail_on_gap:
@@ -368,7 +380,38 @@ def build_parser() -> argparse.ArgumentParser:
 
     f = sub.add_parser("frameworks", help="list known framework keys")
     f.set_defaults(func=_cmd_frameworks)
+
+    # --- feeds: real, edge/air-gap-deployable data-feed ingestion ------------
+    a.add_argument("--enrich", action="store_true",
+                   help="annotate 800-53 findings with real NIST OSCAL family "
+                        "titles + ATT&CK techniques mitigated (uses bundled feeds)")
+    a.add_argument("--offline", action="store_true",
+                   help="with --enrich, serve feed data from the on-disk cache "
+                        "only (air-gap); never touch the network")
+
+    fe = sub.add_parser(
+        "feeds",
+        help="real public data feeds (NIST 800-53 OSCAL + ATT&CK crosswalk), "
+             "edge/air-gap deployable")
+    fsub = fe.add_subparsers(dest="feeds_cmd", required=True)
+    fsub.add_parser("list", help="list this repo's relevant feeds")
+    fsub.add_parser("update", help="fetch + cache the feeds (online)")
+    fg = fsub.add_parser("get", help="print a cached/fetched feed")
+    fg.add_argument("feed")
+    fg.add_argument("--offline", action="store_true",
+                    help="serve from cache only (air-gap); never touch the network")
+    fen = fsub.add_parser(
+        "enrich",
+        help="resolve 800-53 family titles + ATT&CK technique coverage per theme")
+    fen.add_argument("--offline", action="store_true",
+                     help="serve from cache only (air-gap); never touch the network")
+    fe.set_defaults(func=_cmd_feeds)
     return p
+
+
+def _cmd_feeds(a: argparse.Namespace) -> int:
+    import atlas_feeds
+    return atlas_feeds.cli(a)
 
 
 def main(argv: list[str] | None = None) -> int:
