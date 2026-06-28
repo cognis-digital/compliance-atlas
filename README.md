@@ -8,6 +8,61 @@ implement once and satisfy many. Built from primary sources (linked in `SOURCES.
 
 > Not legal advice. Frameworks change — verify against the authoritative source before relying on this.
 
+
+<!-- cognis:example:start -->
+## 🔎 Example output
+
+**Sample result format** _(illustrative values — run on your own data for real findings):_
+
+```
+{
+  "compliances": [
+    {
+      "id": "001",
+      "name": "GDPR",
+      "description": "General Data Protection Regulation",
+      "status": "active",
+      "effective_date": "2018-05-25T00:00:00Z",
+      "expiration_date": null,
+      "compliance_items": [
+        {
+          "id": "001-001",
+          "name": "Data Subject Rights",
+          "description": "Allow users to access and delete their data"
+        },
+        {
+          "id": "001-002",
+          "name": "Breach Notification",
+          "description": "Notify users within 72 hours of a breach"
+        }
+      ]
+    },
+    {
+      "id": "002",
+      "name": "HIPAA",
+      "description": "Health Insurance Portability and Accountability Act",
+      "status": "active",
+      "effective_date": "1996-08-21T00:00:00Z",
+      "expiration_date": null,
+      "compliance_items": [
+        {
+          "id": "002-001",
+          "name": "Protected Health Information",
+          "description": "Define and protect PHI"
+        },
+        {
+          "id": "002-002",
+          "name": "Security Measures",
+          "description": "Implement security measures to prevent breaches"
+        }
+      ]
+    }
+  ]
+}
+```
+
+<!-- cognis:example:end -->
+
 ## Usage — step by step
 
 1. Get the atlas — clone it, or install via the suite installer:
