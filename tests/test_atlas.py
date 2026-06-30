@@ -177,9 +177,12 @@ def test_sarif_clean_posture_has_no_results():
 # --- demos -------------------------------------------------------------------
 
 def _demo_dirs():
+    # worked-scenario dirs are exactly those carrying a posture.json
+    # (skips helper dirs like __pycache__ and the runnable demos/*.py modules)
     return sorted(
         os.path.join(DEMOS, d) for d in os.listdir(DEMOS)
         if os.path.isdir(os.path.join(DEMOS, d))
+        and os.path.exists(os.path.join(DEMOS, d, "posture.json"))
     )
 
 

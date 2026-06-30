@@ -236,10 +236,31 @@ Tests run with **zero network**: a trimmed sample of each feed is committed unde
 `tests/fixtures/cache/`, and the tests point `COGNIS_FEEDS_CACHE` at it (see
 `demos/09-feed-enrichment/`). Defensive / authorized-use intelligence only.
 
-## Worked demos — real situations, run them as-is
+## Demos
 
-`demos/<NN-name>/` each pair a realistic `posture.json` with a `SCENARIO.md`
-(where the data came from, what to expect, the exact command, how to act):
+Two layers, both driving the **real** API on **real** data (nothing mocked). See
+**[docs/DEMOS.md](docs/DEMOS.md)** for the full guide and **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**
+for how the pieces fit.
+
+**Runnable, narrated scenarios** (`demos/*.py`) — pick the one for your role, or
+run them all. Offline, exit 0, standard library only:
+
+```bash
+PYTHONUTF8=1 python demos/run_all.py            # all five, in order
+PYTHONUTF8=1 python demos/01_startup_first_soc2.py
+```
+
+| Demo | Audience | What it shows |
+|---|---|---|
+| `01_startup_first_soc2.py` | Founders chasing first SOC 2 | Readiness gut-check → prioritized punch list (*stand up* vs *prove*) + board coverage number |
+| `02_grc_implement_once.py` | GRC / compliance leads | One baseline across all six frameworks at once; each gap's cross-framework blast radius |
+| `03_auditor_ci_gate.py` | Auditors / CI engineers | Clean-run proof, `--fail-on-gap` exit codes, real SARIF 2.1.0 for code-scanning |
+| `04_security_engineer_threat_coverage.py` | Security engineers | 800-53 gaps as **ATT&CK technique exposure** (real OSCAL + CTID feeds, offline) |
+| `05_greenfield_assess_by_default.py` | Pre-seed / greenfield | Empty posture → honest 0% roadmap; portable, framework-agnostic blueprint |
+
+**Worked posture pairs** (`demos/<NN-name>/`) — each pairs a realistic
+`posture.json` with a `SCENARIO.md` (data provenance, expected output, exact
+command, how to act). The runnable scenarios above load these same files:
 
 | Demo | Situation |
 |---|---|
