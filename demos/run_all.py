@@ -18,6 +18,10 @@ SCENARIOS = [
     "03_auditor_ci_gate",
     "04_security_engineer_threat_coverage",
     "05_greenfield_assess_by_default",
+    "06_pci_mixed_severity",
+    "07_export_formats_pipeline",
+    "08_airgap_snapshot_roundtrip",
+    "09_ato_partial_remediation",
 ]
 
 

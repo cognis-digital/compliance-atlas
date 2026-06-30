@@ -1,0 +1,13 @@
+{
+  "org": "Harbor & Main Retail (e-commerce, PCI DSS 4.0 SAQ-A-EP)",
+  "scope": ["pci-dss", "soc2"],
+  "controls": {
+    "Access control": "partial",
+    "Crypto / data protection": "missing",
+    "Logging & monitoring": "partial",
+    "Incident response": "missing",
+    "Change management": "implemented",
+    "Risk management": "missing",
+    "Vendor / supply chain": "implemented"
+  }
+}

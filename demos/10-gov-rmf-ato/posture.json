@@ -1,0 +1,13 @@
+{
+  "org": "Meridian Cloud Gov (FedRAMP/RMF Moderate, ATO prep)",
+  "scope": ["800-53", "nist-csf", "rmf-moderate"],
+  "controls": {
+    "Access control": "implemented",
+    "Crypto / data protection": "implemented",
+    "Logging & monitoring": "partial",
+    "Incident response": "implemented",
+    "Change management": "partial",
+    "Risk management": "implemented",
+    "Vendor / supply chain": "partial"
+  }
+}
