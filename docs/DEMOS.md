@@ -33,6 +33,10 @@ PYTHONUTF8=1 python demos/01_startup_first_soc2.py
 | `03_auditor_ci_gate.py` | Auditors / CI engineers | Clean-run proof + the exact `--fail-on-gap` exit codes; emits real SARIF 2.1.0 for a code-scanning dashboard | `assess`, `to_sarif`, `summarize` |
 | `04_security_engineer_threat_coverage.py` | Security engineers | 800-53 gaps reframed as **ATT&CK technique exposure** using real NIST OSCAL titles + the CTID crosswalk — fully offline | `atlas_feeds.enrich_matrix` / `enrich_findings` (`offline=True`) |
 | `05_greenfield_assess_by_default.py` | Pre-seed / greenfield founders | An empty posture honestly returns a 0% roadmap (silence == gap); the same themes anchor a portable, framework-agnostic blueprint | `assess` (empty posture), `MATRIX`, `to_markdown` |
+| `06_pci_mixed_severity.py` | Retail / e-commerce | A deliberately mixed posture (implemented/partial/missing) grouped into every severity band, with each high gap's cross-framework blast radius | `assess` (all frameworks), `scope_frameworks`, `MATRIX`, `summarize` |
+| `07_export_formats_pipeline.py` | Platform / DevEx engineers | All five exporters over one posture, each output machine-checked (JSON/SARIF round-trip, CSV row count, table/markdown non-empty) | every `atlas._FORMATTERS` exporter, `summarize` |
+| `08_airgap_snapshot_roundtrip.py` | Air-gap operators | Export the feed cache to one archive, import it into a fresh enclave cache, then enrich the matrix fully offline — the real sneakernet round-trip | `datafeeds.snapshot_export` / `snapshot_import`, `atlas_feeds.enrich_matrix` |
+| `09_ato_partial_remediation.py` | Gov / RMF SSP authors | Rank the remaining *partial* 800-53 families by the ATT&CK techniques each mitigates, so ATO remediation is sequenced by threat, not control id | `assess(framework="800-53")`, `atlas_feeds.enrich_findings`, `summarize` |
 
 ## Worked posture pairs (`demos/NN-name/`)
 
@@ -47,5 +51,8 @@ PYTHONUTF8=1 python demos/01_startup_first_soc2.py
 | `07-iso-certification-prep` | Clean run — `--fail-on-gap` as an ISO stage-2 CI gate |
 | `08-msp-multiframework` | MSP shared baseline reported across all six frameworks at once |
 | `09-feed-enrichment` | Air-gapped enclave: enrich 800-53 themes with real OSCAL titles + ATT&CK coverage, fully offline |
+| `10-gov-rmf-ato` | Gov cloud SaaS prepping an RMF / ATO package at the 800-53 Moderate baseline (mostly implemented, a few partial families) |
+| `11-clean-soc2-iso` | Fully clean dual SOC 2 + ISO 27001 posture — 100% coverage, zero SARIF results, `--fail-on-gap` exit 0 |
+| `12-retail-pci-saq` | Retail e-commerce with a mixed PCI DSS 4.0 + SOC 2 posture spanning every severity band |
 
 Tests for both layers live in `tests/` — `python -m pytest -q`.

@@ -105,12 +105,25 @@ class PostureError(ValueError):
 
 
 def load_posture(path: str) -> dict:
-    """Load and validate a posture JSON file."""
-    with open(path, "r", encoding="utf-8") as fh:
-        data = json.load(fh)
+    """Load and validate a posture JSON file.
+
+    Raises :class:`PostureError` for any malformed posture — including invalid
+    JSON and non-UTF-8 bytes — with the offending path named, so the same
+    ``except PostureError`` covers every content failure. ``OSError`` (e.g. the
+    file does not exist) propagates unchanged.
+    """
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except json.JSONDecodeError as e:
+        raise PostureError(f"{path}: not valid JSON ({e})") from e
+    except UnicodeDecodeError as e:
+        raise PostureError(f"{path}: not valid UTF-8 ({e})") from e
     if not isinstance(data, dict):
         raise PostureError("posture file must be a JSON object")
     controls = data.get("controls", {})
+    if controls is None:
+        controls = {}
     if not isinstance(controls, dict):
         raise PostureError("'controls' must be an object of theme -> status")
     for theme, status in controls.items():
@@ -123,7 +136,27 @@ def load_posture(path: str) -> dict:
                 f"theme {theme!r} has invalid status {status!r}; "
                 f"valid: {', '.join(VALID_STATUS)}"
             )
+    # 'scope', when present, is a list of free-form target tags. Entries that
+    # happen to be framework keys steer reports; adjacency tags (e.g.
+    # "cmmc-l2", "hipaa-adjacent") are allowed. We only guard the *shape* so a
+    # `scope: "soc2"` string typo fails loudly instead of iterating characters.
+    scope = data.get("scope")
+    if scope is not None and not isinstance(scope, list):
+        raise PostureError("'scope' must be a list of framework/target tags")
     return data
+
+
+def scope_frameworks(posture: dict) -> list[str]:
+    """The known framework keys named in a posture's ``scope``, in order.
+
+    ``scope`` may carry adjacency tags that are not framework keys (e.g.
+    ``"cmmc-l2"``, ``"hipaa-adjacent"``); those are dropped here so callers can
+    safely map the result through :data:`FRAMEWORKS` without a ``KeyError``.
+    """
+    scope = posture.get("scope") or []
+    if not isinstance(scope, list):
+        return []
+    return [fw for fw in scope if fw in FRAMEWORKS]
 
 
 def assess(posture: dict, framework: str | None = None) -> list[dict]:
@@ -137,8 +170,15 @@ def assess(posture: dict, framework: str | None = None) -> list[dict]:
     Findings are ordered most-severe first, then by a stable theme/framework
     order so output is deterministic across runs.
     """
-    controls = posture.get("controls", {})
-    targets = [framework] if framework else list(FRAMEWORKS)
+    controls = posture.get("controls") or {}
+    if not isinstance(controls, dict):
+        raise PostureError("'controls' must be an object of theme -> status")
+    # An explicit framework="" is a caller bug, not "all frameworks"; only the
+    # default (None) means "every framework".
+    if framework is None:
+        targets = list(FRAMEWORKS)
+    else:
+        targets = [framework]
     for fw in targets:
         if fw not in FRAMEWORKS:
             raise PostureError(
@@ -153,6 +193,11 @@ def assess(posture: dict, framework: str | None = None) -> list[dict]:
     findings: list[dict] = []
     for theme, mapping in MATRIX.items():
         status = controls.get(theme, "missing")
+        if status not in _SEVERITY:
+            raise PostureError(
+                f"theme {theme!r} has invalid status {status!r}; "
+                f"valid: {', '.join(VALID_STATUS)}"
+            )
         severity, _ = _SEVERITY[status]
         for fw in targets:
             findings.append({
