@@ -1,4 +1,13 @@
-docs: ['**/*.md']
-tests: ['tests/**']
-ci: ['.github/**']
-ports: ['ports/**']
+# actions/labeler@v5 configuration: each label maps to a list of match rules.
+docs:
+  - changed-files:
+      - any-glob-to-any-file: '**/*.md'
+tests:
+  - changed-files:
+      - any-glob-to-any-file: 'tests/**'
+ci:
+  - changed-files:
+      - any-glob-to-any-file: '.github/**'
+ports:
+  - changed-files:
+      - any-glob-to-any-file: 'ports/**'
