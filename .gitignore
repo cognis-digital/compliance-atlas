@@ -4,3 +4,5 @@ __pycache__/
 .feedcache/
 *.tar.gz
 # local feed cache (committed trimmed fixtures live under tests/fixtures/cache/)
+
+media/walkthrough.mp4
