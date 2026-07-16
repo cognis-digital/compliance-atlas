@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "compliance-atlas"
+version = "0.2.0"
+description = "A condensed, cross-walked map of security & privacy frameworks, runnable as a CI-gateable gap report."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [{ name = "Cognis Digital" }]
+keywords = ["compliance", "grc", "soc2", "iso27001", "nist", "pci-dss", "sarif", "crosswalk"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Topic :: Security",
+  "Topic :: Software Development :: Quality Assurance",
+]
+# Runtime is pure standard library — no third-party dependencies.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.4"]
+
+[project.urls]
+Homepage = "https://github.com/cognis-digital/compliance-atlas"
+Source = "https://github.com/cognis-digital/compliance-atlas"
+
+[project.scripts]
+atlas = "atlas:main"
+
+[tool.setuptools]
+py-modules = ["atlas", "atlas_feeds", "datafeeds", "livesearch"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+# E402: module-level imports after a sys.path shim in demos are intentional.
+# E702: the bundled CLIs use a compact one-statement-per-subparser style on purpose.
+ignore = ["E402", "E702"]

@@ -9,7 +9,8 @@ an *evidence* problem), and what coverage number to quote the board.
 Real API: atlas.load_posture -> atlas.assess(framework="soc2") -> findings,
 plus atlas.summarize for the coverage score. Posture: demos/01-saas-soc2.
 """
-from _common import load, rule, print_summary, status_glyph
+from _common import load, print_summary, rule, status_glyph
+
 import atlas
 
 

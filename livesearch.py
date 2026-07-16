@@ -27,7 +27,7 @@ import re
 import sys
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from xml.etree import ElementTree as ET
 
@@ -98,7 +98,8 @@ def fetch_feed(url: str, limit: int = 50, source: str = "") -> list[dict]:
         items.append({
             "title": html.unescape(title),
             "link": link,
-            "published": dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z") if dt else "",
+            "published": (dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+                          if dt else ""),
             "source": source or feed_title or urllib.parse.urlparse(url).netloc,
             "query": "",
         })

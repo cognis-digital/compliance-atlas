@@ -291,12 +291,66 @@ def to_sarif(findings: list[dict], posture: dict) -> str:
     }, indent=2)
 
 
+def to_html(findings: list[dict], posture: dict) -> str:
+    """Render a self-contained HTML gap report (inline CSS, no external assets).
+
+    The document is a single ``<div>`` fragment safe to drop into a dashboard or
+    email: a coverage meter, a status roll-up, and a table of findings colour-coded
+    by severity. All dynamic text is HTML-escaped, so untrusted org/scope values in
+    a posture file cannot inject markup.
+    """
+    import html as _html
+
+    summ = summarize(findings)
+    org = _html.escape(str(posture.get("org", "(unnamed)")))
+    scope = ", ".join(_html.escape(str(s)) for s in posture.get("scope", []))
+    pct = summ["coverage"]
+    counts = " · ".join(f"{_html.escape(k)}: {v}"
+                        for k, v in sorted(summ["by_status"].items()))
+    _bar_color = "#16a34a" if pct >= 0.8 else "#d97706" if pct >= 0.5 else "#dc2626"
+    _row_bg = {"high": "#fef2f2", "medium": "#fffbeb", "none": "#f0fdf4"}
+
+    rows = []
+    for f in findings:
+        bg = _row_bg.get(f["severity"], "#ffffff")
+        rows.append(
+            f'      <tr style="background:{bg}">'
+            f'<td>{_html.escape(f["theme"])}</td>'
+            f'<td>{_html.escape(f["status"])}</td>'
+            f'<td>{_html.escape(f["framework_name"])}</td>'
+            f'<td><code>{_html.escape(f["control"])}</code></td></tr>'
+        )
+    scope_line = f'<p class="scope">Scope: {scope}</p>' if scope else ""
+    return (
+        '<div class="compliance-atlas-report" '
+        'style="font-family:system-ui,Segoe UI,Arial,sans-serif;max-width:900px">\n'
+        f'  <h1 style="margin-bottom:0">compliance-atlas gap report — {org}</h1>\n'
+        f'  {scope_line}\n'
+        f'  <div style="margin:8px 0 4px;font-weight:600">Coverage: {pct:.0%}</div>\n'
+        f'  <div style="background:#e5e7eb;border-radius:6px;height:18px;width:100%">\n'
+        f'    <div style="background:{_bar_color};height:18px;border-radius:6px;'
+        f'width:{pct:.1%}"></div>\n'
+        f'  </div>\n'
+        f'  <p style="color:#6b7280;font-size:0.9em">{counts}</p>\n'
+        '  <table style="border-collapse:collapse;width:100%" border="1" '
+        'cellpadding="6">\n'
+        '    <thead><tr style="background:#111827;color:#fff">'
+        '<th>Theme</th><th>Status</th><th>Framework</th><th>Control</th></tr></thead>\n'
+        '    <tbody>\n' + "\n".join(rows) + '\n    </tbody>\n'
+        '  </table>\n'
+        '  <p style="color:#6b7280;font-size:0.85em">Planning aid generated from '
+        '<code>crosswalks/master-matrix.md</code>. Not legal advice.</p>\n'
+        '</div>'
+    )
+
+
 _FORMATTERS = {
     "table": to_table,
     "json": to_json,
     "csv": to_csv,
     "markdown": to_markdown,
     "sarif": to_sarif,
+    "html": to_html,
 }
 
 
@@ -308,6 +362,168 @@ def _version() -> str:
             return fh.read().strip()
     except OSError:
         return "0.0.0"
+
+
+# --- posture drift (diff), remediation plan, template -----------------------
+
+# how "good" each status is, for detecting improvement vs. regression over time
+_STATUS_RANK = {"missing": 0, "partial": 1, "n/a": 2, "implemented": 3}
+
+
+def _theme_status(posture: dict, theme: str) -> str:
+    """The status a posture assigns a theme (omitted == ``missing``)."""
+    return posture.get("controls", {}).get(theme, "missing")
+
+
+def diff_postures(old: dict, new: dict) -> dict:
+    """Compare two postures theme-by-theme and report the drift between them.
+
+    Every theme is classified ``improved`` / ``regressed`` / ``unchanged`` by the
+    ordering in :data:`_STATUS_RANK` (transitions to/from ``n/a`` are treated as
+    neutral re-scoping and count as ``unchanged``). The rollup also carries the
+    coverage delta so CI can gate on regressions.
+
+    Returns::
+
+        {"org","themes":[{"theme","from","to","change"}...],
+         "improved":[...],"regressed":[...],"unchanged":[...],
+         "coverage_from","coverage_to","coverage_delta"}
+    """
+    themes = []
+    improved, regressed, unchanged = [], [], []
+    for theme in MATRIX:
+        a, b = _theme_status(old, theme), _theme_status(new, theme)
+        if a == "n/a" or b == "n/a":
+            # re-scoping to/from n/a is neutral: don't reward or punish it
+            change = "unchanged"
+        elif _STATUS_RANK[b] > _STATUS_RANK[a]:
+            change = "improved"
+        elif _STATUS_RANK[b] < _STATUS_RANK[a]:
+            change = "regressed"
+        else:
+            change = "unchanged"
+        row = {"theme": theme, "from": a, "to": b, "change": change}
+        themes.append(row)
+        {"improved": improved, "regressed": regressed,
+         "unchanged": unchanged}[change].append(row)
+    cov_from = summarize(assess(old, framework=next(iter(FRAMEWORKS))))["coverage"]
+    cov_to = summarize(assess(new, framework=next(iter(FRAMEWORKS))))["coverage"]
+    return {
+        "org": new.get("org", old.get("org", "")),
+        "themes": themes,
+        "improved": improved,
+        "regressed": regressed,
+        "unchanged": unchanged,
+        "coverage_from": cov_from,
+        "coverage_to": cov_to,
+        "coverage_delta": round(cov_to - cov_from, 3),
+    }
+
+
+def render_diff(d: dict) -> str:
+    """Human-readable drift table for :func:`diff_postures`."""
+    arrow = {"improved": "▲", "regressed": "▼", "unchanged": "="}
+    org = d.get("org") or "(unnamed)"
+    delta = d["coverage_delta"]
+    sign = "+" if delta >= 0 else ""
+    lines = [
+        f"# compliance-atlas posture drift — {org}",
+        f"# coverage {d['coverage_from']:.0%} -> {d['coverage_to']:.0%} "
+        f"({sign}{delta:.0%})  "
+        f"[improved:{len(d['improved'])} regressed:{len(d['regressed'])} "
+        f"unchanged:{len(d['unchanged'])}]",
+        "",
+    ]
+    w = max((len(r["theme"]) for r in d["themes"]), default=5)
+    lines.append(f"{'':1}  {'THEME':<{w}}  {'FROM':<11}  {'TO':<11}  CHANGE")
+    for r in d["themes"]:
+        lines.append(
+            f"{arrow[r['change']]:1}  {r['theme']:<{w}}  "
+            f"{r['from']:<11}  {r['to']:<11}  {r['change']}"
+        )
+    return "\n".join(lines)
+
+
+def remediation_plan(posture: dict) -> dict:
+    """Rank a posture's open gaps by remediation priority + coverage upside.
+
+    ``missing`` themes rank above ``partial`` ones; within a rank, the stable
+    matrix order breaks ties (deterministic output). Each item carries the exact
+    coverage gain from taking that theme to ``implemented`` and the control
+    reference it satisfies in **every** framework — the "implement once, satisfy
+    many" blast radius.
+    """
+    controls = posture.get("controls", {})
+    scored = [t for t in MATRIX if controls.get(t, "missing") != "n/a"]
+    denom = len(scored) or 1
+    theme_order = {t: i for i, t in enumerate(MATRIX)}
+    current = {"implemented": 1.0, "partial": 0.5, "missing": 0.0}
+
+    items = []
+    for theme in MATRIX:
+        status = controls.get(theme, "missing")
+        if status in ("implemented", "n/a"):
+            continue
+        gain = round((1.0 - current[status]) / denom, 3)
+        items.append({
+            "theme": theme,
+            "status": status,
+            "priority": "high" if status == "missing" else "medium",
+            "coverage_gain": gain,
+            "satisfies": dict(MATRIX[theme]),
+        })
+    rank = {"missing": 0, "partial": 1}
+    items.sort(key=lambda it: (rank[it["status"]], theme_order[it["theme"]]))
+    for i, it in enumerate(items, 1):
+        it["step"] = i
+    return {
+        "org": posture.get("org", ""),
+        "coverage": summarize(assess(posture,
+                                     framework=next(iter(FRAMEWORKS))))["coverage"],
+        "open_gaps": len(items),
+        "plan": items,
+    }
+
+
+def render_plan(p: dict) -> str:
+    """Human-readable remediation plan for :func:`remediation_plan`."""
+    org = p.get("org") or "(unnamed)"
+    lines = [
+        f"# compliance-atlas remediation plan — {org}",
+        f"# coverage {p['coverage']:.0%}  ·  {p['open_gaps']} open gap(s), "
+        f"most impactful first",
+        "",
+    ]
+    if not p["plan"]:
+        lines.append("No open gaps — every scored theme is implemented. ✔")
+        return "\n".join(lines)
+    for it in p["plan"]:
+        fws = ", ".join(f"{k}:{v}" for k, v in it["satisfies"].items())
+        lines.append(
+            f"{it['step']:>2}. [{it['priority']:<6}] {it['theme']} "
+            f"({it['status']} -> implemented, +{it['coverage_gain']:.0%} coverage)"
+        )
+        lines.append(f"      satisfies: {fws}")
+    return "\n".join(lines)
+
+
+def new_posture_template(org: str = "Your Org, Inc.",
+                         status: str = "missing",
+                         scope: list[str] | None = None) -> dict:
+    """Build a fully-populated posture skeleton with every theme set to ``status``.
+
+    Gives users a valid starting point they can edit rather than hand-authoring
+    the theme keys (and misspelling one). ``status`` must be a valid status value.
+    """
+    if status not in VALID_STATUS:
+        raise PostureError(
+            f"invalid status {status!r}; valid: {', '.join(VALID_STATUS)}"
+        )
+    return {
+        "org": org,
+        "scope": scope if scope is not None else list(FRAMEWORKS),
+        "controls": {theme: status for theme in MATRIX},
+    }
 
 
 # --- CLI ---------------------------------------------------------------------
@@ -336,11 +552,19 @@ def _cmd_assess(a: argparse.Namespace) -> int:
             return 2
     out = _FORMATTERS[a.format](findings, posture)
     print(out)
+    exit_code = 0
+    min_cov = getattr(a, "min_coverage", None)
+    if min_cov is not None:
+        coverage = summarize(findings)["coverage"]
+        if coverage < min_cov:
+            print(f"atlas: coverage {coverage:.0%} is below the required "
+                  f"{min_cov:.0%}", file=sys.stderr)
+            exit_code = 1
     if a.fail_on_gap:
         gaps = [f for f in findings if f["severity"] != "none"]
         if gaps:
-            return 1
-    return 0
+            exit_code = 1
+    return exit_code
 
 
 def _cmd_matrix(_a: argparse.Namespace) -> int:
@@ -359,6 +583,47 @@ def _cmd_frameworks(_a: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_diff(a: argparse.Namespace) -> int:
+    try:
+        old = load_posture(a.old)
+        new = load_posture(a.new)
+    except (PostureError, json.JSONDecodeError) as e:
+        print(f"atlas: {e}", file=sys.stderr)
+        return 2
+    except OSError as e:
+        print(f"atlas: cannot read posture: {e}", file=sys.stderr)
+        return 2
+    d = diff_postures(old, new)
+    print(json.dumps(d, indent=2) if a.format == "json" else render_diff(d))
+    if a.fail_on_regression and d["regressed"]:
+        return 1
+    return 0
+
+
+def _cmd_plan(a: argparse.Namespace) -> int:
+    try:
+        posture = load_posture(a.posture)
+    except (PostureError, json.JSONDecodeError) as e:
+        print(f"atlas: {e}", file=sys.stderr)
+        return 2
+    except OSError as e:
+        print(f"atlas: cannot read {a.posture}: {e}", file=sys.stderr)
+        return 2
+    p = remediation_plan(posture)
+    print(json.dumps(p, indent=2) if a.format == "json" else render_plan(p))
+    return 0
+
+
+def _cmd_template(a: argparse.Namespace) -> int:
+    try:
+        tmpl = new_posture_template(org=a.org, status=a.status)
+    except PostureError as e:
+        print(f"atlas: {e}", file=sys.stderr)
+        return 2
+    print(json.dumps(tmpl, indent=2))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="atlas",
@@ -373,6 +638,9 @@ def build_parser() -> argparse.ArgumentParser:
     a.add_argument("--format", choices=list(_FORMATTERS), default="table")
     a.add_argument("--fail-on-gap", action="store_true",
                    help="exit non-zero if any partial/missing theme exists (CI gate)")
+    a.add_argument("--min-coverage", type=float, default=None, metavar="FRACTION",
+                   help="exit non-zero if coverage is below this fraction "
+                        "(0.0-1.0), e.g. --min-coverage 0.8 (CI gate)")
     a.set_defaults(func=_cmd_assess)
 
     m = sub.add_parser("matrix", help="print the embedded theme matrix")
@@ -380,6 +648,29 @@ def build_parser() -> argparse.ArgumentParser:
 
     f = sub.add_parser("frameworks", help="list known framework keys")
     f.set_defaults(func=_cmd_frameworks)
+
+    d = sub.add_parser(
+        "diff", help="show posture drift between two posture files over time")
+    d.add_argument("old", help="path to the earlier (baseline) posture JSON")
+    d.add_argument("new", help="path to the later (current) posture JSON")
+    d.add_argument("--format", choices=("table", "json"), default="table")
+    d.add_argument("--fail-on-regression", action="store_true",
+                   help="exit non-zero if any theme regressed (CI drift gate)")
+    d.set_defaults(func=_cmd_diff)
+
+    pl = sub.add_parser(
+        "plan", help="prioritized remediation plan for a posture's open gaps")
+    pl.add_argument("posture", help="path to a posture JSON file")
+    pl.add_argument("--format", choices=("table", "json"), default="table")
+    pl.set_defaults(func=_cmd_plan)
+
+    t = sub.add_parser(
+        "template", help="print a ready-to-edit posture JSON skeleton")
+    t.add_argument("--org", default="Your Org, Inc.",
+                   help="organization name to seed into the template")
+    t.add_argument("--status", choices=list(VALID_STATUS), default="missing",
+                   help="status to pre-fill every theme with (default: missing)")
+    t.set_defaults(func=_cmd_template)
 
     # --- feeds: real, edge/air-gap-deployable data-feed ingestion ------------
     a.add_argument("--enrich", action="store_true",

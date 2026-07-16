@@ -14,7 +14,7 @@ and the tests.
 | Module / file | Role |
 |---|---|
 | `crosswalks/master-matrix.md` | The source of truth: 7 control **themes** × 6 frameworks (SOC 2, ISO 27001, NIST CSF 2.0, 800-53 r5, 800-171, PCI DSS 4.0). |
-| `atlas.py` | `MATRIX` (transcribed verbatim from the doc) + the assessor: `load_posture` → `assess` → `summarize` → exporters (`table`/`json`/`csv`/`markdown`/`sarif`). The `assess` / `matrix` / `frameworks` / `feeds` CLI. |
+| `atlas.py` | `MATRIX` (transcribed verbatim from the doc) + the assessor: `load_posture` → `assess` → `summarize` → exporters (`table`/`json`/`csv`/`markdown`/`sarif`/`html`). Also `diff_postures` (drift over time), `remediation_plan` (prioritized gap plan), and `new_posture_template` (scaffold). The `assess` / `diff` / `plan` / `template` / `matrix` / `frameworks` / `feeds` CLI. |
 | `atlas_feeds.py` | Wires the bundled feed layer to *this repo's two compliance feeds only*: resolves 800-53 family **titles** (OSCAL) and counts ATT&CK **techniques mitigated** (CTID crosswalk). |
 | `datafeeds.py` + `data_feeds_2026.json` | Stdlib feed engine: keyless fetch → on-disk cache → offline re-serve → air-gap snapshot import/export. |
 | `frameworks/*.md`, `crosswalks/*.md` | The condensed, human-readable reference summaries and pairwise crosswalks. |
@@ -44,6 +44,12 @@ flowchart TD
   EXP --> C[csv]
   EXP --> MD[markdown]
   EXP --> SA[SARIF 2.1.0]
+  EXP --> H[html]
+
+  POS --> PLAN[atlas.remediation_plan<br/>prioritized gap plan]
+  P2[posture.json<br/>later snapshot] -->|load_posture| POS2[posture dict]
+  POS --> DIFF[atlas.diff_postures<br/>drift + coverage delta]
+  POS2 --> DIFF
 
   subgraph Offline feed enrichment
     CACHE[(on-disk cache /<br/>air-gap snapshot)]
@@ -76,3 +82,17 @@ flowchart TD
   against `tests/fixtures/cache/`.
 - **One code path.** CLI, demos, and tests all call the same `assess` / `summarize`
   / exporter / `enrich_*` functions — there is no demo-only or test-only logic.
+- **Additive surface.** New capabilities (`diff`, `plan`, `template`, the `html`
+  exporter, `--min-coverage`) are layered on the same pure functions; no existing
+  command, flag, or exporter changed behavior.
+
+## Command surface
+
+| Command | Pure function(s) | What it produces |
+|---|---|---|
+| `assess` | `load_posture` → `assess` → `summarize` → exporters | Per-framework gap report in `table`/`json`/`csv`/`markdown`/`sarif`/`html`; CI gates via `--fail-on-gap` / `--min-coverage`. |
+| `diff` | `diff_postures` → `render_diff` | Theme-by-theme drift between two posture snapshots + coverage delta; `--fail-on-regression` gate. |
+| `plan` | `remediation_plan` → `render_plan` | Open gaps ranked by priority and coverage upside, with the control each fix satisfies in every framework. |
+| `template` | `new_posture_template` | A valid, fully-populated `posture.json` skeleton to edit. |
+| `matrix` / `frameworks` | `MATRIX` / `FRAMEWORKS` | The embedded theme matrix / known framework keys. |
+| `feeds …` | `atlas_feeds.*` | Real NIST 800-53 OSCAL + CTID ATT&CK enrichment, offline-capable. |

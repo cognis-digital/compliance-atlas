@@ -10,7 +10,8 @@ radius of each remaining gap made explicit.
 Real API: atlas.assess(posture) over every framework, atlas.MATRIX for the
 crosswalk, atlas.summarize for coverage. Posture: demos/08-msp-multiframework.
 """
-from _common import load, rule, print_summary
+from _common import load, print_summary, rule
+
 import atlas
 
 
