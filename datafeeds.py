@@ -31,8 +31,8 @@ import os
 import sys
 import tarfile
 import time
-import urllib.request
 import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Any, Optional
 
@@ -179,7 +179,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     sub = p.add_subparsers(dest="cmd")
     pl = sub.add_parser("list"); pl.add_argument("--domain")
     pu = sub.add_parser("update"); pu.add_argument("feeds", nargs="+")
-    pg = sub.add_parser("get"); pg.add_argument("feed"); pg.add_argument("--offline", action="store_true")
+    pg = sub.add_parser("get")
+    pg.add_argument("feed")
+    pg.add_argument("--offline", action="store_true")
     pe = sub.add_parser("snapshot-export"); pe.add_argument("path")
     pi = sub.add_parser("snapshot-import"); pi.add_argument("path")
     args = p.parse_args(argv)

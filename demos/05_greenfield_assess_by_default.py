@@ -13,7 +13,8 @@ target later changes.
 Real API: atlas.assess on an empty posture, atlas.MATRIX, atlas.to_markdown for
 a roadmap artifact. Posture: demos/06-greenfield-baseline.
 """
-from _common import load, rule, print_summary
+from _common import load, print_summary, rule
+
 import atlas
 
 

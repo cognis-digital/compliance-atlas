@@ -23,6 +23,7 @@ SCENARIOS = [
     "03_auditor_ci_gate",
     "04_security_engineer_threat_coverage",
     "05_greenfield_assess_by_default",
+    "06_track_drift_and_plan",
 ]
 
 

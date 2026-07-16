@@ -15,6 +15,7 @@ Real API: atlas.assess, atlas.to_sarif, atlas.summarize. No fabricated results.
 import json
 
 from _common import load, rule
+
 import atlas
 
 

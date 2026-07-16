@@ -143,7 +143,7 @@ python -m atlas assess demos/01-saas-soc2/posture.json --framework soc2
 # all six frameworks at once (implement-once-satisfy-many view)
 python -m atlas assess demos/08-msp-multiframework/posture.json
 
-# machine-readable exports: json · csv · markdown · sarif
+# machine-readable exports: json · csv · markdown · sarif · html
 python -m atlas assess demos/08-msp-multiframework/posture.json --format sarif > atlas.sarif
 
 # CI gate: non-zero exit if any theme is partial/missing
@@ -179,6 +179,31 @@ Status values: `implemented` | `partial` | `missing` | `n/a`.
 | `csv` | an evidence-binder snapshot / spreadsheet |
 | `markdown` | pasting into a readiness deck or PR |
 | **`sarif`** | uploading gaps to a **code-scanning / SARIF 2.1.0** dashboard |
+| **`html`** | a self-contained, colour-coded report for a dashboard or email |
+
+### More `atlas` commands
+
+Beyond `assess`, the CLI turns the same matrix into a few more workflows — all
+pure standard library, all covered by tests. Full details in **[docs/USAGE.md](docs/USAGE.md)**.
+
+```bash
+# scaffold a valid posture file (every theme pre-filled) instead of hand-writing keys
+python -m atlas template --org "Acme, Inc." > posture.json
+
+# a prioritized remediation plan: open gaps ranked by coverage upside,
+# each showing the control it satisfies in ALL six frameworks
+python -m atlas plan posture.json
+
+# posture drift over time — what improved / regressed between two snapshots
+python -m atlas diff last-quarter.json this-quarter.json
+python -m atlas diff old.json new.json --fail-on-regression   # CI drift gate
+
+# a coverage-threshold CI gate (complements --fail-on-gap)
+python -m atlas assess posture.json --min-coverage 0.8
+```
+
+Exit codes: `0` success · `1` a CI gate tripped (`--fail-on-gap`,
+`--min-coverage`, `--fail-on-regression`) · `2` bad/unreadable posture file.
 
 ## Live data feeds — real NIST 800-53 + ATT&CK, edge / air-gap deployable
 
@@ -266,6 +291,7 @@ PYTHONUTF8=1 python demos/01_startup_first_soc2.py
 | `03_auditor_ci_gate.py` | Auditors / CI engineers | Clean-run proof, `--fail-on-gap` exit codes, real SARIF 2.1.0 for code-scanning |
 | `04_security_engineer_threat_coverage.py` | Security engineers | 800-53 gaps as **ATT&CK technique exposure** (real OSCAL + CTID feeds, offline) |
 | `05_greenfield_assess_by_default.py` | Pre-seed / greenfield | Empty posture → honest 0% roadmap; portable, framework-agnostic blueprint |
+| `06_track_drift_and_plan.py` | GRC leads tracking progress | Scaffold a posture, rank gaps by coverage upside (`plan`), and measure quarter-over-quarter drift (`diff`) |
 
 **Worked posture pairs** (`demos/<NN-name>/`) — each pairs a realistic
 `posture.json` with a `SCENARIO.md` (data provenance, expected output, exact
@@ -297,6 +323,12 @@ flowchart LR
 ```
 
 **Explore the suite →** [🗂️ all tools](https://github.com/cognis-digital/cognis-neural-suite) · [⭐ awesome-cognis](https://github.com/cognis-digital/awesome-cognis) · [🔗 cognis-sources](https://github.com/cognis-digital/cognis-sources)
+
+## Roadmap
+
+Where `compliance-atlas` is headed — near/mid/long-term direction and the
+constraints that stay fixed (no invented requirements, standard-library-only,
+offline-first, additive) — is in **[ROADMAP.md](ROADMAP.md)**.
 
 ## Interoperability
 
